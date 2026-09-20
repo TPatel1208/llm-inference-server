@@ -1,4 +1,12 @@
+import asyncio 
+from collections.abc import AsyncGenerator
+
 class FakeLLM:
-    def generate_response(self, query: str, max_tokens: int = 50) -> str:
+    async def generate_response(self, query: str, max_tokens: int = 50) -> AsyncGenerator:
         # Simulate a response by returning the query repeated
-        return f"Fake response to '{query}' with max tokens {max_tokens}"
+        stream_response =  (f"Fake response to '{query}' with max tokens {max_tokens}").split()
+        for word in stream_response:
+            yield word + " "
+            await asyncio.sleep(0.5)
+
+        
