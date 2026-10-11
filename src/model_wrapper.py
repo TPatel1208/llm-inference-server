@@ -4,6 +4,8 @@ class ModelWrapper:
     def __init__(self, model, tokenizer):
         self.model = model
         self.tokenizer = tokenizer
+        eos = model.generation_config.eos_token_id
+        self.eos_ids = set(eos) if isinstance(eos, (list, tuple)) else {eos}
 
     @torch.inference_mode()
     def step(self, input_ids, attention_mask, position_ids=None, past_key_values=None):
@@ -26,9 +28,10 @@ class ModelWrapper:
             next_id = next_logits.argmax(dim=1)
             next_position = position_ids[:, -1:] + 1
             position_ids = next_position
-            generated.append(next_id.item())
+            token = next_id.item()
+            generated.append(token)
             attention_mask = torch.cat([attention_mask, torch.ones_like(attention_mask[:,:1])], dim=1)
-            if next_id.item() == self.model.generation_config.eos_token_id:
+            if token in self.eos_ids:
                 break
             input_ids = next_id.unsqueeze(1)
         return generated
