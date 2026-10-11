@@ -46,10 +46,4 @@ class Benchmark():
             results = await asyncio.gather(*tasks)
 
 
-        return results
-                
-
-
-
-
-        
+        return results       
