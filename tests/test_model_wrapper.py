@@ -60,3 +60,22 @@ class TestModelWrapper:
         hf_new = hf_generate(model, tokenizer, prompt, n)
         assert mine == hf_new
         assert len(mine) < n
+
+    def test_batched_generate_greedy(self, wrapper):
+        model, tokenizer = wrapper.model, wrapper.tokenizer
+        short_prompt = tokenizer.apply_chat_template(
+            [{"role": "user", "content": "Reply with only the word: hi"}],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        long_prompt =  ("Computers have changed significantly over the past several decades. "
+                        "Early computers occupied entire rooms, while modern devices can fit "
+                        "in a pocket. Advances in processor design, memory, and software have "
+                        "made computing faster and more accessible.")
+        prompts = ["Hello", "What is the capital of France?", short_prompt, long_prompt]
+        n = 50
+        out = wrapper.generate_greedy_batched(prompts, max_output_tokens=n)
+        for p, o in zip(prompts, out):
+            assert o == wrapper.generate_greedy(p, max_output_tokens=n)
+        assert len(out[2]) < n
+        assert out[2][-1] in wrapper.eos_ids
