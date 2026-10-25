@@ -52,3 +52,4 @@ dist/
 outputs/
 checkpoints/
 cache/
+results/

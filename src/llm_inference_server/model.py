@@ -9,7 +9,7 @@ class LLM_Model:
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name, 
             device_map=device_map, 
-            torch_dtype= dtype
+            dtype= dtype
             )
 
         self.tokenizer = AutoTokenizer.from_pretrained(

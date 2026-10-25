@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 import asyncio
 import os
 
-from model import LLM_Model
-from models.chat_request import GenerateRequest
-from models.fake_model import FakeLLM
+from llm_inference_server.model import LLM_Model
+from llm_inference_server.models.chat_request import GenerateRequest
+from llm_inference_server.models.fake_model import FakeLLM
 
 load_dotenv()  # Load environment variables from .env file
 
