@@ -41,7 +41,6 @@ def compute_stats(times: list[float], token_counts: list[int]) -> dict[str, floa
     stdev_time = statistics.stdev(times) if len(times) > 1 else 0.0
 
     return {
-        "iterations": len(times),
         "average_time": statistics.mean(times),
         "median_time": statistics.median(times),
         "min_time": min(times),
