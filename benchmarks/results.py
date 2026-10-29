@@ -30,3 +30,20 @@ def load_results() -> list[dict]:
         list[dict]: Saved benchmark records, oldest first.
     """
     return [json.loads(path.read_text()) for path in sorted(RESULTS_DIR.glob("*.json"))]
+
+
+def select_records(records: list[dict], strategy: str, **settings) -> list[dict]:
+    """Select benchmark records that match the given strategy and settings.
+
+    Args:
+        records (list[dict]): List of benchmark records to filter.
+        strategy (str): Generation strategy to filter by.
+        **settings: Settings to filter by, for example batch_size and max_output_tokens.
+    """
+    selected = []
+    for record in records:
+        if record["strategy"] != strategy:
+            continue
+        if all(record["settings"].get(k) == v for k, v in settings.items()):
+            selected.append(record)
+    return sorted(selected, key=lambda record: record["settings"]["batch_size"])

@@ -6,9 +6,10 @@ import typer
 from llm_inference_server.model_wrapper import ModelWrapper
 from benchmarks.generation_benchmarks.runner import GenerationBenchmarkRunner
 from benchmarks.prompts import PROMPTS
-from benchmarks.results import save_result
+from benchmarks.results import save_result, load_results, select_records
 from benchmarks.stats import compute_stats
 from benchmarks.workload import shuffle_prompts
+from benchmarks.plots import plot_throughput_vs_batch_size
 
 app = typer.Typer()
 def _load_model_and_tokenizer(model_name: str = "Qwen/Qwen2.5-0.5B-Instruct", dtype: str = "float16"):
@@ -124,6 +125,13 @@ def run_static(
             ignore_eos=ignore_eos,
             seed=seed,
         )
+    records = load_results()
+    selected_records = select_records(records, "static", model=model_name, dtype=f'torch.{dtype}', max_output_tokens=max_output_tokens, ignore_eos=ignore_eos, device=str(runner.wrapper.model.device), number_of_prompts=len(prompts))
+    if selected_records:
+        batch_sizes = [record["settings"]["batch_size"] for record in selected_records]
+        throughputs = [record["stats"]["throughput"] for record in selected_records]
+        plot_path = plot_throughput_vs_batch_size(batch_sizes, throughputs, "static", model_name, dtype)
+        print(f"Saved throughput vs batch size plot to {plot_path}")
 
 if __name__ == "__main__":
     app()
