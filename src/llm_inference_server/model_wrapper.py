@@ -1,5 +1,5 @@
 import torch
-
+from llm_inference_server.kv_cache import kv_cache
 class ModelWrapper:
     def __init__(self, model, tokenizer):
         self.model = model
